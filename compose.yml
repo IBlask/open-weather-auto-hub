@@ -1,4 +1,19 @@
+name: open-weather-auto-hub
+
 services:
+  flaskapp:
+    container_name: flaskapp
+    build:
+      context: ./src
+      dockerfile: flask.dockerfile
+    ports:
+      - '5000:5000'
+    restart: always
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@database:5432/postgres
+    depends_on:
+      - database
+
   database:
     container_name: database
     image: postgres:13
