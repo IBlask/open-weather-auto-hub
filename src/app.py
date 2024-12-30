@@ -11,3 +11,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('DATABASE_URL')
 db = SQLAlchemy(app)
 import models
 db.create_all()
+
+from controllers import register_blueprints
+register_blueprints(app)
