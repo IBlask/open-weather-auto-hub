@@ -29,3 +29,8 @@ def delete_device(device_id):
         
     except Exception as e:
         return False
+
+
+def get_all_devices():
+    devices = MeasuringDevice.query.all()
+    return devices

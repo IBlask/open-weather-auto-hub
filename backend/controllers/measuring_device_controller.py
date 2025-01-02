@@ -45,3 +45,17 @@ def delete_device():
     
     except Exception as e:
         return make_response(jsonify({'message': 'Error deleting device! Please try again.'}), 500)
+
+
+
+@measuring_device_bp.route('/list', methods=['GET'])
+def list_devices():
+    try:
+        devices = measuring_device_service.get_all_devices()
+        
+        device_list = [{'id': device.id, 'name': device.name, 'public_key': device.public_key} for device in devices]
+        
+        return jsonify(device_list), 200
+    
+    except Exception as e:
+        return make_response(jsonify({'message': 'Error retrieving devices! Please try again.'}), 500)
