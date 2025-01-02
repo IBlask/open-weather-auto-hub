@@ -4,7 +4,7 @@ services:
   flaskapp:
     container_name: flaskapp
     build:
-      context: ./src
+      context: ./backend
       dockerfile: flask.dockerfile
     ports:
       - '5000:5000'
