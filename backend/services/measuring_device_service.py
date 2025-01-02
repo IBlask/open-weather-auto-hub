@@ -14,3 +14,18 @@ def add_device(data):
         'name': new_device.name,
         'public-key': new_device.public_key
     })
+
+
+def delete_device(device_id):
+    try:
+        device = MeasuringDevice.query.get(device_id)
+    
+        if device:
+            db.session.delete(device)
+            db.session.commit()
+            return True
+        else:
+            return False
+        
+    except Exception as e:
+        return False
