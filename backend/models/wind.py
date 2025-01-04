@@ -10,5 +10,4 @@ class Wind(db.Model):
     speed = db.Column(db.Float, unique = False, nullable = False)
     direction = db.Column(db.Float, unique = False, nullable = False)
     measuring_device_id = db.Column(UUID(as_uuid = True), db.ForeignKey('measuring_devices.id'), nullable = False)
-    measuring_device = db.relationship('MeasuringDevice', back_populates = 'winds')
     created_at = db.Column(db.DateTime, nullable = False)
