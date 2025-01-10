@@ -29,3 +29,23 @@ def save_weather_data():
     
     except Exception as e:
         return make_response(jsonify({'message': 'Error saving weather data! Please try again.'}), 500)
+    
+
+
+@weather_data_bp.route('/', methods=['GET'])
+def get_weather_data():
+    try:
+        filters = {
+            'type': request.args.get('type'),
+            'measuring_device': request.args.get('measuring_device'),
+            'start_time': request.args.get('start_time'),
+            'end_time': request.args.get('end_time'),
+            'last_n': request.args.get('last_n')
+        }
+
+        data, status_code = weather_data_service.get_weather_data(filters)
+        
+        return make_response(jsonify(data), status_code)
+    
+    except Exception as e:
+        return make_response(jsonify({'message': 'Error retrieving weather data! Please try again.'}), 500)
