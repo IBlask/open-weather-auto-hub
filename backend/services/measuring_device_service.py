@@ -12,7 +12,7 @@ def add_device(data):
 
     return jsonify({
         'name': new_device.name,
-        'public-key': new_device.public_key
+        'public_key': new_device.public_key
     })
 
 
