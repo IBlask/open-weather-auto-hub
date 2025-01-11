@@ -10,7 +10,7 @@ from services import measuring_device_service
 measuring_device_bp = Blueprint('measuring_device', __name__, url_prefix='/api/measuring-device')
 
 
-@measuring_device_bp.route('/', methods=['POST'])
+@measuring_device_bp.route('', methods=['POST'])
 def add_device():
     try:
         data = request.get_json()
@@ -24,7 +24,7 @@ def add_device():
     
 
 
-@measuring_device_bp.route('/', methods=['DELETE'])
+@measuring_device_bp.route('', methods=['DELETE'])
 def delete_device():
     try:
         if not request.data:

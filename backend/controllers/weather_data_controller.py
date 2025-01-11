@@ -6,7 +6,7 @@ from services import weather_data_service
 weather_data_bp = Blueprint('weather_data', __name__, url_prefix='/api/weather-data')
 
 
-@weather_data_bp.route('/', methods=['POST'])
+@weather_data_bp.route('', methods=['POST'])
 def save_weather_data():
     try:
         if not request.data:
@@ -32,7 +32,7 @@ def save_weather_data():
     
 
 
-@weather_data_bp.route('/', methods=['GET'])
+@weather_data_bp.route('', methods=['GET'])
 def get_weather_data():
     try:
         filters = {
