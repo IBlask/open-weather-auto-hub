@@ -18,3 +18,22 @@ def add_device():
     
     except Exception as e:
         return make_response(jsonify({'message': 'Error adding new device! Please try again.'}), 500)
+
+
+@automation_device_bp.route('', methods=['DELETE'])
+def delete_device():
+    try:
+        data = request.get_json()
+        
+        if not data or 'device_id' not in data or not data['device_id']:
+            return make_response(jsonify({'message': 'Device ID is required!'}), 400)
+        
+        result = automation_device_service.delete_device(data['device_id'])
+        
+        if result:
+            return make_response(jsonify({'message': 'Device deleted successfully!'}), 200)
+        else:
+            return make_response(jsonify({'message': 'Device not found!'}), 404)
+    
+    except Exception as e:
+        return make_response(jsonify({'message': 'Error deleting device! Please try again.'}), 500)

@@ -20,3 +20,18 @@ def add_device(data):
     db.session.commit()
 
     return 'Device added successfully!', 201
+
+
+def delete_device(device_id):
+    try:
+        device = AutomationDevice.query.get(device_id)
+    
+        if device:
+            db.session.delete(device)
+            db.session.commit()
+            return True
+        else:
+            return False
+        
+    except Exception as e:
+        return False
