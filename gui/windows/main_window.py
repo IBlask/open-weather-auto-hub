@@ -9,9 +9,9 @@ class MainWindow(tk.Frame):
         self.label = tk.Label(self, text="Welcome to OpenWeatherAutoHub", font=("Arial", 24))
         self.label.pack(pady=50)
 
-        self.button = tk.Button(self, text="Go to Page 2", command=self.switch_page)
+        self.button = tk.Button(self, text="Measuring devices", command=self.switch_page)
         self.button.pack(pady=20)
 
     def switch_page(self):
-        from windows.page2 import Page2
-        self.master.switch_frame(Page2)
+        from windows.measuring_device_window import MeasuringDeviceWindow
+        self.master.switch_frame(MeasuringDeviceWindow)
