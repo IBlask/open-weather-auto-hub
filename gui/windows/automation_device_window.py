@@ -1,29 +1,31 @@
 import tkinter as tk
+
+import tkinter as tk
 from tkinter import ttk, messagebox
 import requests
 
-API_URL_LIST = "http://127.0.0.1:5000/api/measuring-device/list"
-API_URL_ADD = "http://127.0.0.1:5000/api/measuring-device"
-API_URL_DELETE = "http://127.0.0.1:5000/api/measuring-device" 
+API_URL_LIST = "http://127.0.0.1:5000/api/automation-device/list"
+API_URL_ADD = "http://127.0.0.1:5000/api/automation-device"
+API_URL_DELETE = "http://127.0.0.1:5000/api/automation-device" 
 
-class MeasuringDeviceWindow(tk.Frame):
+class AutomationDeviceWindow(tk.Frame):
     def __init__(self, master):
         super().__init__(master)
         self.master = master
         self.configure(bg="lightgreen")
 
-        self.label = tk.Label(self, text="Measuring Devices", font=("Arial", 20), bg="lightgreen")
+        self.label = tk.Label(self, text="Automation Devices", font=("Arial", 20), bg="lightgreen")
         self.label.pack(pady=10)
 
         table_frame = tk.Frame(self, bg="lightgreen")
         table_frame.pack(pady=10)
 
-        columns = ("Name", "Public Key")
+        columns = ("Name", "IP Address")
         self.tree = ttk.Treeview(table_frame, columns=columns, show="headings", height=15)
         self.tree.column("Name", width=350, anchor="center")  
-        self.tree.column("Public Key", width=350, anchor="center")
+        self.tree.column("IP Address", width=350, anchor="center")
         self.tree.heading("Name", text="Name")
-        self.tree.heading("Public Key", text="Public Key")
+        self.tree.heading("IP Address", text="IP Address")
         self.tree.pack(fill="both", padx=10, pady=1)
 
         self.device_data = {}
@@ -41,6 +43,7 @@ class MeasuringDeviceWindow(tk.Frame):
         self.add_label.pack(pady=10)
 
         self.name_entry = self.create_labeled_entry("Device Name:")
+        self.ip_entry = self.create_labeled_entry("Device IP Address:")
 
         self.add_button = tk.Button(self, text="Add Device", command=self.add_device)
         self.add_button.pack(pady=10)
@@ -73,26 +76,32 @@ class MeasuringDeviceWindow(tk.Frame):
         self.device_data.clear()
 
         for index, device in enumerate(devices):
-            item_id = self.tree.insert("", "end", values=(device['name'], device['public_key']))
+            item_id = self.tree.insert("", "end", values=(device['name'], device['ip_address']))
             self.device_data[item_id] = device['id']
 
     def add_device(self):
         name = self.name_entry.get()
+        ip_address = self.ip_entry.get()
 
-        if not name:
-            messagebox.showwarning("Input Error", "Please enter the device name!")
+        if not name or not ip_address:
+            messagebox.showwarning("Input Error", "Please enter both device name and IP address!")
             return
 
-        new_device = {"name": name}
+        new_device = {
+            "name": name,
+            "ip_address": ip_address
+        }
 
         try:
             response = requests.post(API_URL_ADD, json=new_device)
             response.raise_for_status()
             messagebox.showinfo("Success", "Device added successfully!")
             self.name_entry.delete(0, tk.END)
+            self.ip_entry.delete(0, tk.END)
             self.fetch_devices()
         except requests.exceptions.RequestException as e:
             messagebox.showerror("Error", f"Failed to add device: {e}")
+
 
     def delete_device(self):
         selected_item = self.tree.selection()
@@ -121,3 +130,4 @@ class MeasuringDeviceWindow(tk.Frame):
     def switch_back(self):
         from windows.main_window import MainWindow
         self.master.switch_frame(MainWindow)
+
