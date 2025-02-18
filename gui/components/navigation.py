@@ -1,6 +1,6 @@
 import tkinter as tk
 from windows.main_window import MainWindow
-from windows.page2 import Page2
+from windows.measuring_device_window import MeasuringDeviceWindow
 from windows.page3 import Page3
 
 class NavigationBar(tk.Frame):
@@ -15,8 +15,8 @@ class NavigationBar(tk.Frame):
         self.main_window_button = tk.Button(button_frame, text="Main Window", command=lambda: parent.switch_frame(MainWindow))
         self.main_window_button.pack(side="top", pady=10, padx=5, expand=False)
 
-        self.page2_button = tk.Button(button_frame, text="Page 2", command=lambda: parent.switch_frame(Page2))
-        self.page2_button.pack(side="top", pady=10, padx=5, expand=False)
+        self.measuring_device_window_button = tk.Button(button_frame, text="Measuring devices", command=lambda: parent.switch_frame(MeasuringDeviceWindow))
+        self.measuring_device_window_button.pack(side="top", pady=10, padx=5, expand=False)
 
         self.page3_button = tk.Button(button_frame, text="Page 3", command=lambda: parent.switch_frame(Page3))
         self.page3_button.pack(side="top", pady=10, padx=5, expand=False)
