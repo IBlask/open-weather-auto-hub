@@ -95,12 +95,23 @@ class AutomationDeviceWindow(tk.Frame):
         try:
             response = requests.post(API_URL_ADD, json=new_device)
             response.raise_for_status()
-            messagebox.showinfo("Success", "Device added successfully!")
+            response_data = response.json()
+
+            messagebox.showinfo("Success", response_data.get("message", "Device added successfully!"))
             self.name_entry.delete(0, tk.END)
             self.ip_entry.delete(0, tk.END)
             self.fetch_devices()
+        
+        except requests.exceptions.HTTPError as e:
+            try:
+                error_message = response.json().get("message", "Unknown error occurred!")
+            except:
+                error_message = str(e)
+            messagebox.showerror("Error", error_message)
+
         except requests.exceptions.RequestException as e:
             messagebox.showerror("Error", f"Failed to add device: {e}")
+
 
 
     def delete_device(self):
