@@ -41,3 +41,8 @@ def delete_email(email_address):
         return 'Email address not found!', 404
     except Exception as e:
         return 'Error deleting email! Please try again.', 500
+    
+
+def get_all_emails():
+    emails = Email.query.all()
+    return [email.email for email in emails], 200

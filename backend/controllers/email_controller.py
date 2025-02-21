@@ -32,3 +32,12 @@ def delete_email():
         return make_response(jsonify({'message': message}), status_code)
     except Exception as e:
         return make_response(jsonify({'message': 'Error deleting email! Please try again.'}), 500)
+    
+
+@app.route('/api/email/list', methods=['GET'])
+def get_all_emails():
+    try:
+        emails, status_code = email_service.get_all_emails()
+        return make_response(jsonify({'emails': emails}), status_code)
+    except Exception as e:
+        return make_response(jsonify({'message': 'Error retrieving emails! Please try again.'}), 500)
