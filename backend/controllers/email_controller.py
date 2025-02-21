@@ -18,3 +18,17 @@ def add_email():
         return make_response(jsonify({'message': message}), status_code)
     except Exception as e:
         return make_response(jsonify({'message': 'Error adding new email! Please try again.'}), 500)
+    
+
+@app.route('/api/email', methods=['DELETE'])
+def delete_email():
+    data = request.get_json()
+    
+    if not data or not 'email' in data or not data['email']:
+        return make_response(jsonify({'message': 'Email address is required!'}), 400)
+    
+    try:
+        message, status_code = email_service.delete_email(data['email'])
+        return make_response(jsonify({'message': message}), status_code)
+    except Exception as e:
+        return make_response(jsonify({'message': 'Error deleting email! Please try again.'}), 500)
