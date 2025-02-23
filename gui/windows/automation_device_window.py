@@ -49,7 +49,7 @@ class AutomationDeviceWindow(tk.Frame):
         self.add_button.pack(pady=10)
 
         self.back_button = tk.Button(self, text="Back to Main Window", command=self.switch_back)
-        self.back_button.pack(pady=50)
+        self.back_button.pack(side="bottom", pady="10")
 
     def create_labeled_entry(self, label_text):
         frame = tk.Frame(self, bg="lightgreen")
