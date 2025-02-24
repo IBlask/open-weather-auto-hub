@@ -53,7 +53,7 @@ def list_devices():
     try:
         devices = measuring_device_service.get_all_devices()
         
-        device_list = [{'id': device.id, 'name': device.name, 'public_key': device.public_key} for device in devices]
+        device_list = [{'id': device.id, 'name': device.name, 'public_key': device.public_key, 'altitude': device.altitude} for device in devices]
         
         return jsonify(device_list), 200
     

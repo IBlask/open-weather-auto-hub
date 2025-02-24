@@ -13,3 +13,4 @@ class MeasuringDevice(db.Model):
     id = db.Column(UUID(as_uuid = True), primary_key = True, default = uuid.uuid4)
     name = db.Column(db.String(100), unique = False, nullable = False)
     public_key = db.Column(db.String, unique = True, nullable = False, default = generate_public_key)
+    altitude = db.Column(db.Float, unique = False, nullable = False)

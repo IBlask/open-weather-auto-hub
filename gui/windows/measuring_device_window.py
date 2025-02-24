@@ -18,12 +18,14 @@ class MeasuringDeviceWindow(tk.Frame):
         table_frame = tk.Frame(self, bg="lightgreen")
         table_frame.pack(pady=10)
 
-        columns = ("Name", "Public Key")
+        columns = ("Name", "Public Key", "Altitude")
         self.tree = ttk.Treeview(table_frame, columns=columns, show="headings", height=15)
         self.tree.column("Name", width=350, anchor="center")  
         self.tree.column("Public Key", width=350, anchor="center")
+        self.tree.column("Altitude", width=350, anchor="center")
         self.tree.heading("Name", text="Name")
         self.tree.heading("Public Key", text="Public Key")
+        self.tree.heading("Altitude", text="Altitude")
         self.tree.pack(fill="both", padx=10, pady=1)
 
         self.device_data = {}
@@ -41,6 +43,7 @@ class MeasuringDeviceWindow(tk.Frame):
         self.add_label.pack(pady=10)
 
         self.name_entry = self.create_labeled_entry("Device Name:")
+        self.altitude_entry = self.create_labeled_entry("Altitude:")
 
         self.add_button = tk.Button(self, text="Add Device", command=self.add_device)
         self.add_button.pack(pady=10)
@@ -73,26 +76,32 @@ class MeasuringDeviceWindow(tk.Frame):
         self.device_data.clear()
 
         for index, device in enumerate(devices):
-            item_id = self.tree.insert("", "end", values=(device['name'], device['public_key']))
+            item_id = self.tree.insert("", "end", values=(device['name'], device['public_key'], device['altitude']))
             self.device_data[item_id] = device['id']
 
     def add_device(self):
         name = self.name_entry.get()
+        altitude = self.altitude_entry.get()
 
-        if not name:
-            messagebox.showwarning("Input Error", "Please enter the device name!")
+        if not name or not altitude:
+            messagebox.showwarning("Input Error", "Please enter both device name and altitude!")
             return
 
-        new_device = {"name": name}
+        new_device = {
+            "name": name,
+            "altitude": altitude
+        }
 
         try:
             response = requests.post(API_URL_ADD, json=new_device)
             response.raise_for_status()
             messagebox.showinfo("Success", "Device added successfully!")
             self.name_entry.delete(0, tk.END)
+            self.altitude_entry.delete(0, tk.END)
             self.fetch_devices()
         except requests.exceptions.RequestException as e:
             messagebox.showerror("Error", f"Failed to add device: {e}")
+
 
     def delete_device(self):
         selected_item = self.tree.selection()
