@@ -5,7 +5,7 @@ from models import MeasuringDevice
 
 
 def add_device(data):
-    new_device = MeasuringDevice(name = data['name'])
+    new_device = MeasuringDevice(name = data['name'], altitude = data['altitude'])
 
     db.session.add(new_device)
     db.session.commit()
