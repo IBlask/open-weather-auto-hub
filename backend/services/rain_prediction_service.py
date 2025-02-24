@@ -1,9 +1,14 @@
 from datetime import datetime, timedelta
 
 from app import db
+<<<<<<< HEAD
 from models import Temperature, Humidity, Pressure, Wind, RainPrediction, MeasuringDevice
 
 # INFLUENCE OF PARAMETERS IN PREDICTION
+=======
+from models import Temperature, Humidity, Pressure, Wind, RainPrediction
+
+>>>>>>> 870ef0734626c0a7662ccd57a26a1985830be187
 PRESSURE_ABS_SHARE = 0.2                # absoulte pressure value -> 1010 hPa 
 PRESSURE_DELTA_SHARE = 0.15             # pressure change over time: x -> 1010 hPa
 HUMIDITY_ABS_SHARE = 0.15               # absolute humidity value -> 100%
@@ -14,6 +19,7 @@ WIND_DIRECTION_CHANGE_SHARE = 0.05      # wind direction change over time: x -> 
 TEMPERATURE_ABS_SHARE = 0.05            # temperature -> 5-20 degrees celsius
 TEMPERATURE_DELTA_SHARE = 0.05          # temperature change over time: x -> 5-20 degrees celsius
 
+<<<<<<< HEAD
 # VARIABLES FOR SEA LEVEL PRESSURE CALCULATION
 L = 0.0065      # K/m (temperature gradient)
 T0 = 288.15     # K (standard temperature at sea level)
@@ -22,6 +28,8 @@ M = 0.0289644   # kg/mol (molar mass of air)
 R = 8.31432     # J/(mol*K) (gas constant)
 
 
+=======
+>>>>>>> 870ef0734626c0a7662ccd57a26a1985830be187
 def get_data():
     timeframe_min = datetime.now() - timedelta(hours = 1)
 
@@ -30,10 +38,13 @@ def get_data():
     pressure = Pressure.query.filter(Pressure.created_at >= timeframe_min).all()
     wind = Wind.query.filter(Wind.created_at >= timeframe_min).all()
 
+<<<<<<< HEAD
     for p in pressure:
         measuring_device = MeasuringDevice.query.get(p.measuring_device_id)
         p.value = p.value * (1 + (L * measuring_device.altitude) / T0) ** (g * M / (R * L))
 
+=======
+>>>>>>> 870ef0734626c0a7662ccd57a26a1985830be187
     return {
         'temperature': temperature,
         'humidity': humidity,
@@ -44,7 +55,11 @@ def get_data():
 
 def predict_rain():
     data = get_data()
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 870ef0734626c0a7662ccd57a26a1985830be187
     if not data['humidity'] or not data['pressure']:
         raise ValueError('Insufficient data to predict rain!')
 
