@@ -15,9 +15,6 @@ class WeatherDataWindow(tk.Frame):
         header_frame = tk.Frame(self, bg="lightblue")
         header_frame.pack(fill="x", padx=10, pady=10)
 
-        self.back_button = tk.Button(header_frame, text="Back to Main Window", command=self.switch_back)
-        self.back_button.pack(side="right")
-
         self.label = tk.Label(header_frame, text="Weather Data", font=("Arial", 20), bg="lightblue")
         self.label.pack(side="left", expand=True, anchor="center")
 
@@ -32,6 +29,9 @@ class WeatherDataWindow(tk.Frame):
 
         self.graph_frame = tk.Frame(self, bg="lightblue")
         self.graph_frame.pack(fill="both", expand=True, pady=10)
+
+        self.back_button = tk.Button(self, text="Back to Main Window", command=self.switch_back)
+        self.back_button.pack(side="bottom", pady="10")
 
 
     def create_labeled_entry(self, label_text):
