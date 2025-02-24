@@ -1,9 +1,21 @@
 from flask import jsonify
 from sqlalchemy.exc import IntegrityError
 import re
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import logging
+from dotenv import load_dotenv
+from os import environ
 
 from app import db
 from models import Email
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Configure logging for SMTP debugging
+logging.basicConfig(level=logging.INFO)
 
 def is_valid_email(email_address):
     regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
@@ -46,3 +58,32 @@ def delete_email(email_address):
 def get_all_emails():
     emails = Email.query.all()
     return [email.email for email in emails], 200
+
+
+def send_rain_warning_email(recipient_email, prediction):
+    sender_email = environ.get('EMAIL_USERNAME')
+    sender_password = environ.get('EMAIL_PASSWORD')
+    smtp_host = environ.get('EMAIL_SMTP_HOST')
+    smtp_port = environ.get('EMAIL_SMTP_PORT')
+
+    subject = "OWAH: Rain Warning"
+    body = f"Warning: Rain is predicted with a probability of {prediction * 100:.2f}%.\n\nYour OpenWeatherAutoHub"
+
+    msg = MIMEMultipart()
+    msg['From'] = sender_email
+    msg['To'] = recipient_email
+    msg['Subject'] = subject
+
+    msg.attach(MIMEText(body, 'plain'))
+
+    try:
+        server = smtplib.SMTP(smtp_host, smtp_port)
+        server.set_debuglevel(1)  # Enable debug output
+        server.starttls()
+        server.login(sender_email, sender_password)
+        text = msg.as_string()
+        server.sendmail(sender_email, recipient_email, text)
+        server.quit()
+        logging.info('Email sent successfully!')
+    except Exception as e:
+        logging.error(f'Failed to send email: {e}')

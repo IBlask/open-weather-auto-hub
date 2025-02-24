@@ -30,14 +30,17 @@ def get_data():
     pressure = Pressure.query.filter(Pressure.created_at >= timeframe_min).all()
     wind = Wind.query.filter(Wind.created_at >= timeframe_min).all()
 
+    sea_level_pressure = []
     for p in pressure:
         measuring_device = MeasuringDevice.query.get(p.measuring_device_id)
-        p.value = p.value * (1 + (L * measuring_device.altitude) / T0) ** (g * M / (R * L))
+        new_pressure_value = p.value * (1 + (L * measuring_device.altitude) / T0) ** (g * M / (R * L))
+        new_pressure = Pressure(value = new_pressure_value, measuring_device_id = p.measuring_device_id, created_at = p.created_at)
+        sea_level_pressure.append(new_pressure)
 
     return {
         'temperature': temperature,
         'humidity': humidity,
-        'pressure': pressure,
+        'pressure': sea_level_pressure,
         'wind': wind
     }
 
@@ -56,7 +59,14 @@ def predict_rain():
         pressure_delta = 1 - ((data['pressure'][-1].value - 1010) / 5)
         pressure_change = data['pressure'][-1].value - data['pressure'][0].value
         pressure_change_time = data['pressure'][-1].created_at - data['pressure'][0].created_at
-        pressure_change_delta = pressure_change / (pressure_change_time.total_seconds() / 60) * 60
+        pressure_change_time_seconds = pressure_change_time.total_seconds()
+
+        # Add a small epsilon value to avoid division by zero or near-zero values
+        epsilon = 1e-6
+        if pressure_change_time_seconds > epsilon:
+            pressure_change_delta = pressure_change / (pressure_change_time_seconds / 60) * 60
+        else:
+            pressure_change_delta = 0
 
         humidity_delta = data['humidity'][-1].value - data['humidity'][0].value
 

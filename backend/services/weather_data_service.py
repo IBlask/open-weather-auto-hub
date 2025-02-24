@@ -1,7 +1,9 @@
-from datetime import datetime
+from datetime import datetime, timedelta
+from threading import Thread
 
 from app import db
-from models import Temperature, Humidity, Pressure, Wind, MeasuringDevice
+from models import Temperature, Humidity, Pressure, Wind, MeasuringDevice, RainPrediction
+from services import rain_prediction_service, email_service
 
 
 def save_weather_data(data):
@@ -50,6 +52,25 @@ def save_weather_data(data):
             db.session.add(wind)
 
         db.session.commit()
+
+        # Run the rain prediction and email sending code in a new thread
+        def async_prediction_and_emails():
+            timeframe_min = datetime.now() - timedelta(hours = 1)
+            last_rain_prediction = RainPrediction.query.filter(
+                RainPrediction.created_at >= timeframe_min,
+                RainPrediction.prediction > 0.5
+            ).first()
+            
+            new_rain_prediction = rain_prediction_service.predict_rain()
+
+            if not last_rain_prediction:
+                if new_rain_prediction > 0.5:
+                    emails, _ = email_service.get_all_emails()
+                    for email in emails:
+                        email_service.send_rain_warning_email(email, new_rain_prediction)
+
+        thread = Thread(target = async_prediction_and_emails)
+        thread.start()
 
         return 'Weather data saved successfully!', 201
 
