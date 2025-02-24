@@ -1,8 +1,9 @@
 from datetime import datetime, timedelta
 
 from app import db
-from models import Temperature, Humidity, Pressure, Wind, RainPrediction
+from models import Temperature, Humidity, Pressure, Wind, RainPrediction, MeasuringDevice
 
+# INFLUENCE OF PARAMETERS IN PREDICTION
 PRESSURE_ABS_SHARE = 0.2                # absoulte pressure value -> 1010 hPa 
 PRESSURE_DELTA_SHARE = 0.15             # pressure change over time: x -> 1010 hPa
 HUMIDITY_ABS_SHARE = 0.15               # absolute humidity value -> 100%
@@ -13,6 +14,14 @@ WIND_DIRECTION_CHANGE_SHARE = 0.05      # wind direction change over time: x -> 
 TEMPERATURE_ABS_SHARE = 0.05            # temperature -> 5-20 degrees celsius
 TEMPERATURE_DELTA_SHARE = 0.05          # temperature change over time: x -> 5-20 degrees celsius
 
+# VARIABLES FOR SEA LEVEL PRESSURE CALCULATION
+L = 0.0065      # K/m (temperature gradient)
+T0 = 288.15     # K (standard temperature at sea level)
+g = 9.80665     # m/s^2 (gravitational acceleration)
+M = 0.0289644   # kg/mol (molar mass of air)
+R = 8.31432     # J/(mol*K) (gas constant)
+
+
 def get_data():
     timeframe_min = datetime.now() - timedelta(hours = 1)
 
@@ -20,6 +29,10 @@ def get_data():
     humidity = Humidity.query.filter(Humidity.created_at >= timeframe_min).all()
     pressure = Pressure.query.filter(Pressure.created_at >= timeframe_min).all()
     wind = Wind.query.filter(Wind.created_at >= timeframe_min).all()
+
+    for p in pressure:
+        measuring_device = MeasuringDevice.query.get(p.measuring_device_id)
+        p.value = p.value * (1 + (L * measuring_device.altitude) / T0) ** (g * M / (R * L))
 
     return {
         'temperature': temperature,
@@ -31,7 +44,7 @@ def get_data():
 
 def predict_rain():
     data = get_data()
-
+    
     if not data['humidity'] or not data['pressure']:
         raise ValueError('Insufficient data to predict rain!')
 
