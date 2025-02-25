@@ -9,6 +9,8 @@ services:
     ports:
       - '5000:5000'
     restart: always
+    env_file:
+      - .env
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@database:5432/postgres
     depends_on:
@@ -28,3 +30,4 @@ services:
 
 volumes:
   pgdata: {}
+  
