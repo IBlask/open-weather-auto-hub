@@ -11,4 +11,7 @@ class AutomationRequest(db.Model):
     port = db.Column(db.Integer, nullable = True, default = None)
     uri = db.Column(db.String(100), nullable = True, default = None)
     body = db.Column(db.String(255), nullable = True, default = None)
+    trigger = db.Column(db.String(100), nullable = False)
+    trigger_value = db.Column(db.Float, nullable = False)
+    trigger_operator = db.Column(db.String(3), nullable = False)
     
