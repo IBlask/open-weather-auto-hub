@@ -40,3 +40,18 @@ def add_request(data):
     db.session.commit()
 
     return 'Request added successfully!', 201
+
+
+def delete_request(request_id):
+    try:
+        request = AutomationRequest.query.get(request_id)
+    
+        if request:
+            db.session.delete(request)
+            db.session.commit()
+            return True
+        else:
+            return False
+        
+    except Exception as e:
+        raise e

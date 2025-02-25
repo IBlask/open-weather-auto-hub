@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, make_response
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, DataError
 
 from app import app
 from services import automation_request_service
@@ -24,3 +24,21 @@ def add_request():
             return make_response(jsonify({'message': 'Database integrity error! Please try again.'}), 500)
     except Exception as e:
         return make_response(jsonify({'message': 'Error adding new request! Please try again.'}), 500)
+    
+
+@automation_request_bp.route('/<request_id>', methods=['DELETE'])
+def delete_request(request_id):
+    try:
+        if automation_request_service.delete_request(request_id):
+            return make_response(jsonify({'message': 'Request deleted successfully!'}), 200)
+        else:
+            return make_response(jsonify({'message': 'Request ID not found!'}), 404)
+    
+    except IntegrityError as e:
+        return make_response(jsonify({'message': 'Database integrity error! Please try again.'}), 500)
+    except DataError as e:
+        if 'InvalidTextRepresentation' in str(e):
+            return make_response(jsonify({'message': 'Invalid request ID!'}), 400)
+        return make_response(jsonify({'message': 'Data error! Please try again.'}), 500)
+    except Exception as e:
+        return make_response(jsonify({'message': 'Error deleting request! Please try again.'}), 500)
