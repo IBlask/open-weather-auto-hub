@@ -6,3 +6,4 @@ from .wind import Wind
 from .automation_device import AutomationDevice
 from .email import Email
 from .rain_prediction import RainPrediction
+from .automation_request import AutomationRequest
