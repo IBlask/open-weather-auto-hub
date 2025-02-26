@@ -1,7 +1,9 @@
-from flask import jsonify
+from flask import json, jsonify
+import requests
+import logging
 
 from app import db
-from models import AutomationRequest
+from models import AutomationRequest, AutomationDevice
 
 
 def add_request(data):
@@ -14,6 +16,8 @@ def add_request(data):
         return 'Invalid trigger type! Must be one of: temperature, humidity, pressure, wind_speed, wind_direction, rain_prediction', 400
     if data['trigger_operator'] not in ['<', '>', '<=', '>=', '==', '!=']:
         return 'Invalid trigger operator! Must be one of: <, >, <=, >=, ==, !=', 400
+    
+    data['trigger_value'] = float(data['trigger_value'])
     if data['trigger'] == 'rain_prediction' and (data['trigger_value'] < 0 or data['trigger_value'] > 1):
         return 'Rain prediction value must be between 0 and 1!', 400
     if data['trigger'] == 'wind_direction' and (data['trigger_value'] < 0 or data['trigger_value'] > 360):
@@ -30,7 +34,7 @@ def add_request(data):
     )
 
     if 'port' in data and data['port']:
-        new_request.port = data['port']
+        new_request.port = int(data['port'])
     if 'uri' in data and data['uri']:
         new_request.uri = data['uri']
     if 'body' in data and data['body']:
@@ -73,3 +77,59 @@ def get_all_requests():
     
     except Exception as e:
         raise e
+    
+
+def send_http_request(automation_request):
+    try:
+        # Query the database to get the IP address of the automation device
+        device = AutomationDevice.query.get(automation_request.automation_device_id)
+        if not device:
+            raise ValueError("Automation device not found!")
+
+        # Construct the URL
+        url = f"http://{device.ip_address}"
+        if automation_request.port:
+            url += f":{automation_request.port}"
+        if automation_request.uri:
+            if automation_request.uri[0] != '/':
+                url += "/"
+            url += f"{automation_request.uri}"
+
+        # Set the body of the HTTP request
+        try:
+            body = json.loads(automation_request.body) if automation_request.body else {}
+        except json.JSONDecodeError:
+            body = {}
+        
+        # Send the HTTP request
+        response = requests.post(url, json=body)
+        response.raise_for_status()
+
+    except requests.exceptions.HTTPError as e:
+        # Log the error details
+        logging.error(f"HTTP request failed: {e.response.status_code} {e.response.reason} for url: {e.response.url}")
+        logging.error(f"Response content: {e.response.text}")
+
+    except requests.exceptions.RequestException as e:
+        logging.error(f"HTTP request failed: {e}")
+
+    except Exception as e:
+        logging.error(f"Error sending HTTP request: {e}")
+
+
+def is_request_triggered(request, value):
+    trigger_operator = request.trigger_operator
+    trigger_value = request.trigger_value
+
+    if trigger_operator == '<' and value < trigger_value:
+        return 1
+    elif trigger_operator == '>' and value > trigger_value:
+        return 1
+    elif trigger_operator == '<=' and value <= trigger_value:
+        return 1
+    elif trigger_operator == '>=' and value >= trigger_value:
+        return 1
+    elif trigger_operator == '==' and value == trigger_value:
+        return 1
+    elif trigger_operator == '!=' and value != trigger_value:
+        return 1
