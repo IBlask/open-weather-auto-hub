@@ -24,7 +24,7 @@ def add_request():
             return make_response(jsonify({'message': 'Database integrity error! Please try again.'}), 500)
     except DataError as e:
         if 'InvalidTextRepresentation' in str(e):
-            return make_response(jsonify({'message': 'Invalid request ID!'}), 400)
+            return make_response(jsonify({'message': 'Invalid device ID!'}), 400)
         return make_response(jsonify({'message': 'Data error! Please try again.'}), 500)
     except Exception as e:
         return make_response(jsonify({'message': 'Error adding new request! Please try again.'}), 500)
