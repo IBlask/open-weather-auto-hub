@@ -46,3 +46,14 @@ def delete_request(request_id):
         return make_response(jsonify({'message': 'Data error! Please try again.'}), 500)
     except Exception as e:
         return make_response(jsonify({'message': 'Error deleting request! Please try again.'}), 500)
+
+
+@automation_request_bp.route('/list', methods=['GET'])
+def get_all_requests():
+    try:
+        requests = automation_request_service.get_all_requests()
+        
+        return make_response(jsonify(requests), 200)
+    
+    except Exception as e:
+        return make_response(jsonify({'message': 'Error fetching requests! Please try again.'}), 500)

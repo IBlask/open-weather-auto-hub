@@ -55,3 +55,21 @@ def delete_request(request_id):
         
     except Exception as e:
         raise e
+
+
+def get_all_requests():
+    try:
+        requests = AutomationRequest.query.all()
+        return [{'id': request.id, 
+                 'device_id': request.automation_device_id, 
+                 'name': request.name, 
+                 'trigger': request.trigger, 
+                 'trigger_value': request.trigger_value, 
+                 'trigger_operator': request.trigger_operator, 
+                 'port': request.port, 
+                 'uri': request.uri, 
+                 'body': request.body} 
+                for request in requests]
+    
+    except Exception as e:
+        raise e
