@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify, make_response
+from sqlalchemy.exc import IntegrityError, DataError
 
 from app import app
 from services import automation_device_service
@@ -50,3 +51,22 @@ def list_devices():
     
     except Exception as e:
         return make_response(jsonify({'message': 'Error retrieving devices! Please try again.'}), 500)
+
+@automation_device_bp.route('/<device_id>', methods=['GET'])
+def get_device(device_id):
+    try:
+        device = automation_device_service.get_device(device_id)
+        
+        if device:
+            return jsonify({'id': device.id, 'name': device.name, 'ip_address': device.ip_address}), 200
+        else:
+            return make_response(jsonify({'message': 'Device not found!'}), 404)
+    
+    except IntegrityError as e:
+        return make_response(jsonify({'message': 'Database integrity error! Please try again.'}), 500)
+    except DataError as e:
+        if 'InvalidTextRepresentation' in str(e):
+            return make_response(jsonify({'message': 'Invalid device ID!'}), 400)
+        return make_response(jsonify({'message': 'Data error! Please try again.'}), 500)
+    except Exception as e:
+        return make_response(jsonify({'message': 'Error deleting request! Please try again.'}), 500)
