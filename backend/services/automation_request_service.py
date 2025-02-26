@@ -119,7 +119,8 @@ def send_http_request(automation_request):
 
 def is_request_triggered(request, value):
     trigger_operator = request.trigger_operator
-    trigger_value = request.trigger_value
+    trigger_value = float(request.trigger_value)
+    value = float(value)
 
     if trigger_operator == '<' and value < trigger_value:
         return 1
