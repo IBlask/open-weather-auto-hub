@@ -3,6 +3,7 @@ from windows.measuring_device_window import MeasuringDeviceWindow
 from windows.automation_device_window import AutomationDeviceWindow
 from windows.weather_data_window import WeatherDataWindow
 from windows.email_window import EmailWindow
+from windows.automation_requests_window import AutomationRequestWindow
 
 class MainWindow(tk.Frame):
     def __init__(self, master):
@@ -34,8 +35,14 @@ class MainWindow(tk.Frame):
         )
         self.weather_data_window_button.pack(side="left", padx=10, pady=10)
 
-        self.mail_window_button = tk.Button(
+        self.email_window_button = tk.Button(
             button_frame, text="Email window", font=("Arial", 14),
             command=lambda: self.master.switch_frame(EmailWindow)
         )
-        self.mail_window_button.pack(side="left", padx=10, pady=10)
+        self.email_window_button.pack(side="left", padx=10, pady=10)
+
+        self.automation_requests_window_button = tk.Button(
+            button_frame, text="Automation Requests", font=("Arial", 14),
+            command=lambda: self.master.switch_frame(AutomationRequestWindow)
+        )
+        self.automation_requests_window_button.pack(side="left", padx=10, pady=10)
