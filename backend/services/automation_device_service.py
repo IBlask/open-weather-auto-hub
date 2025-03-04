@@ -39,3 +39,7 @@ def delete_device(device_id):
 
 def get_all_devices():
     return AutomationDevice.query.all()
+
+
+def get_device(device_id):
+    return AutomationDevice.query.get(device_id)

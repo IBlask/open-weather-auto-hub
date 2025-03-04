@@ -1,7 +1,8 @@
 from datetime import datetime, timedelta
 
 from app import db
-from models import Temperature, Humidity, Pressure, Wind, RainPrediction, MeasuringDevice
+from models import Temperature, Humidity, Pressure, Wind, RainPrediction, MeasuringDevice, AutomationRequest
+from services import automation_request_service
 
 # INFLUENCE OF PARAMETERS IN PREDICTION
 PRESSURE_ABS_SHARE = 0.2                # absoulte pressure value -> 1010 hPa 
@@ -113,6 +114,11 @@ def predict_rain():
     db.session.add(new_prediction)
     db.session.commit()
 
+
+    automation_requests = AutomationRequest.query.filter(AutomationRequest.trigger == 'rain_prediction').all()
+    for request in automation_requests:
+        if automation_request_service.is_request_triggered(request, prediction):
+            automation_request_service.send_http_request(request)
     
     if prediction > 1:
         return 1

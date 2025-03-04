@@ -4,6 +4,7 @@ from windows.measuring_device_window import MeasuringDeviceWindow
 from windows.automation_device_window import AutomationDeviceWindow
 from windows.weather_data_window import WeatherDataWindow
 from windows.email_window import EmailWindow
+from windows.automation_requests_window import AutomationRequestWindow
 
 class NavigationBar(tk.Frame):
     def __init__(self, parent):
@@ -26,5 +27,8 @@ class NavigationBar(tk.Frame):
         self.weather_data_window_button = tk.Button(button_frame, text="Weather data", command=lambda: parent.switch_frame(WeatherDataWindow))
         self.weather_data_window_button.pack(side="top", pady=10, padx=5, expand=False)
 
-        self.mail_window_button = tk.Button(button_frame, text="Email window", command=lambda: parent.switch_frame((EmailWindow)))
-        self.mail_window_button.pack(side="top", pady=10, padx=5, expand=False)
+        self.email_window_button = tk.Button(button_frame, text="Email window", command=lambda: parent.switch_frame((EmailWindow)))
+        self.email_window_button.pack(side="top", pady=10, padx=5, expand=False)
+
+        self.automation_requests_window_button = tk.Button(button_frame, text="Automation requests", command=lambda: parent.switch_frame((AutomationRequestWindow)))
+        self.automation_requests_window_button.pack(side="top", pady=10, padx=5, expand=False)

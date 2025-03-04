@@ -2,8 +2,8 @@ from datetime import datetime, timedelta
 from threading import Thread
 
 from app import db
-from models import Temperature, Humidity, Pressure, Wind, MeasuringDevice, RainPrediction
-from services import rain_prediction_service, email_service
+from models import Temperature, Humidity, Pressure, Wind, MeasuringDevice, RainPrediction, AutomationRequest
+from services import rain_prediction_service, email_service, automation_request_service
 
 
 def save_weather_data(data):
@@ -53,6 +53,16 @@ def save_weather_data(data):
 
         db.session.commit()
 
+        # Send automation requests
+        def send_automation_requests():
+            automation_requests = AutomationRequest.query.filter(AutomationRequest.trigger.in_(data.keys())).all()
+            for request in automation_requests:
+                if automation_request_service.is_request_triggered(request, data[request.trigger]):
+                    automation_request_service.send_http_request(request)
+        
+        thread1 = Thread(target = send_automation_requests)
+        thread1.start()
+
         # Run the rain prediction and email sending code in a new thread
         def async_prediction_and_emails():
             timeframe_min = datetime.now() - timedelta(hours = 1)
@@ -69,8 +79,8 @@ def save_weather_data(data):
                     for email in emails:
                         email_service.send_rain_warning_email(email, new_rain_prediction)
 
-        thread = Thread(target = async_prediction_and_emails)
-        thread.start()
+        thread2 = Thread(target = async_prediction_and_emails)
+        thread2.start()
 
         return 'Weather data saved successfully!', 201
 
